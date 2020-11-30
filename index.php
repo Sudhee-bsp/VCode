@@ -2,6 +2,15 @@
 require_once('config.php');
 require_once('core/controller.Class.php');
 include('./server.php');
+
+$resultt = mysqli_query($conn, "SELECT * FROM timer ORDER BY question_number DESC LIMIT 1");
+while($res = mysqli_fetch_array($resultt)) { 
+    $dated = $res['date'];
+    $h = $res['h'];
+    $m = $res['m'];
+    $s = $res['s'];
+}
+
 ?>
 <!DOCTYPE html>
 
@@ -58,7 +67,7 @@ include('./server.php');
                   $resul = mysqli_query($conn, $quer);
                   while($r=mysqli_fetch_array($resul)){
                     $date=date_create($r['date']);
-                    echo "This Que is Posted On: ".date_format($date,"d M Y");
+                    echo "<p style='color: white'> This Que is Posted On: ".date_format($date,"d M Y")."</p>";
                   }
                    ?>
                 </button></a
@@ -70,9 +79,36 @@ include('./server.php');
                   class="btn b1"
                   style="margin-top: -10px; margin-right: -10px; color: #345657"
                 >
-                  18 H:43 M:26 s
+                <p id="demo" style="color: white"></p>
                 </button></a
               >
+              <script>
+                    console.log("This is Timer")
+                    var countDownDate = <?php 
+                        echo strtotime("$dated $h:$m:$s" ) ?> * 1000;
+                        var now = <?php echo time() ?> * 1000;
+
+                        // Update the count down every 1 second
+                        var x = setInterval(function() {
+                        now = now + 1000;
+                        // Find the distance between now an the count down date
+                        var distance = countDownDate - now;
+                        // Time calculations for days, hours, minutes and seconds
+                        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        // Output the result in an element with id="demo"
+                        document.getElementById("demo").innerHTML = days + "d " + hours + "h " +
+                        minutes + "m " + seconds + "s ";
+                        // If the count down is over, write some text 
+                        if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementById("demo").innerHTML = "EXPIRED";
+                        }
+                            
+                        }, 1000);
+               </script>
             </li>
             <li>
               <a

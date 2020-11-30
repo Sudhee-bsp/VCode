@@ -13,9 +13,26 @@ if(isset($_POST['upload_question'])){
     $ques_num = ($_POST['ques_num']);
     $date = $_POST['date'];
   
+    // $date1 = date('Y-m-d', strtotime($_POST['date1']));
+    $date1 = ($_POST['date1']);
+    $hour = $_POST['h'];
+    $minute = $_POST['m'];
+    $second = $_POST['s'];
+
     // echo $ques;
     $query1 = "INSERT INTO questions (question, question_number, date) VALUES ('$ques', $ques_num,'$date')";
+    $time_query = "INSERT INTO timer (question_number, date, h, m, s) VALUES ($ques_num, '$date1', $hour, $minute, $second)";
+
     $result = mysqli_query($conn, $query1);
+    $time_result = mysqli_query($conn, $time_query);
+
+    if ($time_query){
+        echo "<br> <br> TIMER set done!";
+    }
+    else{
+        die("Sorry we failed to insert: ". mysqli_error($conn));
+    }
+
     if ($result){
         echo "<br> <br> Question uploaded successfully!";
     }
@@ -66,6 +83,14 @@ if(isset($_POST['update_previous'])){
     }
 }
 
+$resultt = mysqli_query($conn, "SELECT * FROM timer ORDER BY question_number DESC LIMIT 1");
+while($res = mysqli_fetch_array($resultt)) { 
+    $dated = $res['date'];
+    $h = $res['h'];
+    $m = $res['m'];
+    $s = $res['s'];
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -104,7 +129,35 @@ if(isset($_POST['update_previous'])){
         <div class="col-sm-8 above">
             <div style="display:inline;">
                 <h2>Today Quiz Question:</h2>
-                <p>Ends at</p>
+                <h4>Previous question Ends at : </h4>
+                <p id="demo" style="font-size: 18px; font-weight: bold"></p>
+                <script>
+                    console.log("This is Timer")
+                    var countDownDate = <?php 
+                        echo strtotime("$dated $h:$m:$s" ) ?> * 1000;
+                        var now = <?php echo time() ?> * 1000;
+
+                        // Update the count down every 1 second
+                        var x = setInterval(function() {
+                        now = now + 1000;
+                        // Find the distance between now an the count down date
+                        var distance = countDownDate - now;
+                        // Time calculations for days, hours, minutes and seconds
+                        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        // Output the result in an element with id="demo"
+                        document.getElementById("demo").innerHTML = days + "d " + hours + "h " +
+                        minutes + "m " + seconds + "s ";
+                        // If the count down is over, write some text 
+                        if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementById("demo").innerHTML = "EXPIRED";
+                        }
+                            
+                        }, 1000);
+               </script>
             </div>
             <div class="current">
 
@@ -150,8 +203,17 @@ if(isset($_POST['update_previous'])){
                         &nbsp 
                         &nbsp 
                         &nbsp
-                        <span><b>Select the date: </b></span>
+                        <br>
+                        <br>
+                        <span><b>Select the UPLOADED date: </b></span>
                         <input type="date"   required name="date" placeholder="dd/mm/yyyy">
+                        <br>
+                        <br>
+                        <b>Submission Date* </b><input type="date" name="date1" placeholder="dd/mm/yyyy" value="<?php echo $date1;?>">
+                        <b>H* </b><input type="number" name="h" value="<?php echo $h;?>" min="0" max="168">
+                        <b>M* </b><input type="number" name="m" value="<?php echo $m;?>" min="0" max="59">
+                        <b>S* </b><input type="number" name="s" value="<?php echo $s;?>" min="0" max="59">
+                        <br>
                         <br>
                         <input name="upload_question" type="submit" value="Upload" class="btn b2" style="margin-top:5px;">
                     </div>

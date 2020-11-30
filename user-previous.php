@@ -9,6 +9,16 @@ $quesTest = "";
 
 $query4 = "SELECT question, question_number FROM questions ORDER BY question_number";
 $result4 = mysqli_query($conn, $query4);
+
+
+$resultt = mysqli_query($conn, "SELECT * FROM timer ORDER BY question_number DESC LIMIT 1");
+while($res = mysqli_fetch_array($resultt)) { 
+  $dated = $res['date'];
+  $h = $res['h'];
+  $m = $res['m'];
+  $s = $res['s'];
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -69,7 +79,7 @@ $result4 = mysqli_query($conn, $query4);
                   $resul = mysqli_query($conn, $quer);
                   while($r=mysqli_fetch_array($resul)){
                     $date=date_create($r['date']);
-                    echo "Last Que Posted On: ".date_format($date,"d M Y");
+                    echo "<p style='color: white'> Last Question posted on: ".date_format($date,"d M Y")."</p>";
                   }
                    ?>
                 </button></a
@@ -81,9 +91,36 @@ $result4 = mysqli_query($conn, $query4);
                   class="btn b1"
                   style="margin-top: -10px; margin-right: -10px; color: #345657"
                 >
-                  18:43:26
+                <p id="demo" style="color: white"></p>
                 </button></a
               >
+              <script>
+                    console.log("This is Timer")
+                    var countDownDate = <?php 
+                        echo strtotime("$dated $h:$m:$s" ) ?> * 1000;
+                        var now = <?php echo time() ?> * 1000;
+
+                        // Update the count down every 1 second
+                        var x = setInterval(function() {
+                        now = now + 1000;
+                        // Find the distance between now an the count down date
+                        var distance = countDownDate - now;
+                        // Time calculations for days, hours, minutes and seconds
+                        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        // Output the result in an element with id="demo"
+                        document.getElementById("demo").innerHTML = days + "d " + hours + "h " +
+                        minutes + "m " + seconds + "s ";
+                        // If the count down is over, write some text 
+                        if (distance < 0) {
+                        clearInterval(x);
+                        document.getElementById("demo").innerHTML = "EXPIRED";
+                        }
+                            
+                        }, 1000);
+               </script>
             </li>
             <li>
               <a
@@ -143,17 +180,19 @@ $result4 = mysqli_query($conn, $query4);
           style="
             background: linear-gradient(315deg, #20b2aa, #e64a19);
             border-radius: 18px;
-            height: 210px;
+            height: 265px;
           "
         >
           
-            <center><h3 style="text-decoration: underline">Winners</h3></center>
-            <h4>Question Number: <?php echo $que; ?>&nbsp Posted On: <?php echo date_format(date_create($row['date']),"d M Y"); ?> </h4>
-            <p>&nbsp &nbsp &nbsp1.) <?php echo $first; ?></p>
-            <p>&nbsp &nbsp &nbsp2.) <?php echo $second; ?> </p>
-            <p>&nbsp &nbsp &nbsp3.) <?php echo $third; ?></p>
-            <p>&nbsp &nbsp &nbsp4.) <?php echo $fourth; ?></p>
-            <p>&nbsp &nbsp &nbsp5.) <?php echo $fifth; ?></p>
+        <center><h2 style="text-decoration: underline;padding-top:9px; font-family:Apple Chancery, cursive">Winners</h2></center>
+            <h4 style="font-family:Apple Chancery, cursive; margin-left: 40px">Question: <?php echo $que; ?> 
+              <!-- <br /> --> &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+             Posted On: <?php echo date_format(date_create($row['date']),"d M Y"); ?> </h4>
+            <p style="margin-left: 100px; font-size: 18px">  1. <?php echo $first; ?></p>
+            <p style="margin-left: 100px; font-size: 18px">  2. <?php echo $second; ?> </p>
+            <p style="margin-left: 100px; font-size: 18px">  3. <?php echo $third; ?></p>
+            <p style="margin-left: 100px; font-size: 18px">  4. <?php echo $fourth; ?></p>
+            <p style="margin-left: 100px; font-size: 18px">  5. <?php echo $fifth; ?></p>
           
         </div>
         <div class="download">
